@@ -1,9 +1,12 @@
 import { useState, useEffect } from 'react';
-import { gradesAPI } from '../services/api';
+import { gradesAPI, coursesAPI, assignmentsAPI } from '../services/api';
 import { FiAward, FiTrendingUp, FiTrendingDown, FiPlus, FiEdit2 } from 'react-icons/fi';
 
 const Grades = () => {
   const [grades, setGrades] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [assignments, setAssignments] = useState([]);
+  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -20,7 +23,26 @@ const Grades = () => {
 
   useEffect(() => {
     fetchGrades();
+    if (user.role === 'teacher' || user.role === 'admin') {
+      fetchCourses();
+      fetchAssignments();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // Update students when course changes
+    if (formData.course) {
+      const selectedCourse = courses.find(c => c.id === parseInt(formData.course));
+      if (selectedCourse && selectedCourse.students) {
+        setStudents(selectedCourse.students);
+      } else {
+        setStudents([]);
+      }
+    } else {
+      setStudents([]);
+    }
+  }, [formData.course, courses]);
 
   const fetchGrades = async () => {
     try {
@@ -34,20 +56,49 @@ const Grades = () => {
     }
   };
 
+  const fetchCourses = async () => {
+    try {
+      const response = await coursesAPI.getAll();
+      setCourses(response.data.data || []);
+    } catch (err) {
+      console.error('Failed to load courses:', err);
+    }
+  };
+
+  const fetchAssignments = async () => {
+    try {
+      const response = await assignmentsAPI.getAll();
+      setAssignments(response.data.data || []);
+    } catch (err) {
+      console.error('Failed to load assignments:', err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setError(null);
+      const gradeData = {
+        student: parseInt(formData.student),
+        course: parseInt(formData.course),
+        assignment: formData.assignment ? parseInt(formData.assignment) : null,
+        score: parseFloat(formData.score),
+        maxScore: parseInt(formData.maxScore),
+        feedback: formData.feedback || null
+      };
+
       if (selectedGrade) {
-        await gradesAPI.update(selectedGrade.id, formData);
+        await gradesAPI.update(selectedGrade.id, gradeData);
       } else {
-        await gradesAPI.create(formData);
+        await gradesAPI.create(gradeData);
       }
       setShowModal(false);
       setSelectedGrade(null);
       setFormData({ student: '', course: '', assignment: '', score: '', maxScore: 100, feedback: '' });
+      setStudents([]);
       fetchGrades();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save grade');
+      setError(err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || 'Failed to save grade');
     }
   };
 
@@ -155,14 +206,32 @@ const Grades = () => {
 
               {(user.role === 'teacher' || user.role === 'admin') && (
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setSelectedGrade(grade);
+                    const courseId = grade.course_id || grade.course?.id;
+                    const studentId = grade.student_id || grade.student?.id;
+                    
+                    // Fetch course details to get students list
+                    if (courseId) {
+                      try {
+                        const courseResponse = await coursesAPI.getById(courseId);
+                        const course = courseResponse.data.data;
+                        // Add course to list if not already there
+                        if (!courses.find(c => c.id === course.id)) {
+                          setCourses([...courses, course]);
+                        }
+                        setStudents(course.students || []);
+                      } catch (err) {
+                        console.error('Failed to fetch course:', err);
+                      }
+                    }
+                    
                     setFormData({
-                      student: grade.student_id,
-                      course: grade.course_id,
-                      assignment: grade.assignment_id || '',
-                      score: grade.score,
-                      maxScore: grade.maxScore,
+                      student: studentId?.toString() || '',
+                      course: courseId?.toString() || '',
+                      assignment: grade.assignment_id?.toString() || '',
+                      score: grade.score?.toString() || '',
+                      maxScore: grade.maxScore?.toString() || '100',
                       feedback: grade.feedback || ''
                     });
                     setShowModal(true);
@@ -196,38 +265,65 @@ const Grades = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Student ID
+                    Course
                   </label>
-                  <input
-                    type="number"
+                  <select
+                    value={formData.course}
+                    onChange={(e) => setFormData({ ...formData, course: e.target.value, student: '' })}
+                    className="input"
+                    required
+                  >
+                    <option value="">Select a course</option>
+                    {courses.map((course) => (
+                      <option key={course.id} value={course.id}>
+                        {course.name} ({course.code})
+                      </option>
+                    ))}
+                  </select>
+                  {courses.length === 0 && (
+                    <p className="text-sm text-gray-500 mt-1">No courses available. Please create a course first.</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Student
+                  </label>
+                  <select
                     value={formData.student}
                     onChange={(e) => setFormData({ ...formData, student: e.target.value })}
                     className="input"
                     required
-                  />
+                    disabled={!formData.course}
+                  >
+                    <option value="">Select a student</option>
+                    {students.map((student) => (
+                      <option key={student.id} value={student.id}>
+                        {student.name} {student.studentId ? `(${student.studentId})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                  {formData.course && students.length === 0 && (
+                    <p className="text-sm text-gray-500 mt-1">No students enrolled in this course.</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Course ID
+                    Assignment (Optional)
                   </label>
-                  <input
-                    type="number"
-                    value={formData.course}
-                    onChange={(e) => setFormData({ ...formData, course: e.target.value })}
-                    className="input"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Assignment ID (Optional)
-                  </label>
-                  <input
-                    type="number"
+                  <select
                     value={formData.assignment}
                     onChange={(e) => setFormData({ ...formData, assignment: e.target.value })}
                     className="input"
-                  />
+                  >
+                    <option value="">None - General Grade</option>
+                    {assignments
+                      .filter(a => !formData.course || a.course_id === parseInt(formData.course))
+                      .map((assignment) => (
+                        <option key={assignment.id} value={assignment.id}>
+                          {assignment.title} - {assignment.course?.name || ''}
+                        </option>
+                      ))}
+                  </select>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>

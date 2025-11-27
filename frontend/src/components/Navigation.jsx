@@ -15,14 +15,15 @@ const Navigation = ({ isOpen, onClose }) => {
   const role = user.role;
 
   const navItems = [
-    { path: '/dashboard', icon: FiHome, label: 'Dashboard', roles: ['student', 'parent', 'teacher', 'admin'] },
+    { path: '/dashboard', icon: FiHome, label: 'Dashboard', roles: ['student', 'teacher', 'admin'] },
+    { path: '/parents-dashboard', icon: FiHome, label: 'Parent Dashboard', roles: ['parent'] },
     { path: '/courses', icon: FiBook, label: 'Courses', roles: ['student', 'parent', 'teacher', 'admin'] },
     { path: '/assignments', icon: FiFileText, label: 'Assignments', roles: ['student', 'parent', 'teacher', 'admin'] },
     { path: '/grades', icon: FiAward, label: 'Grades', roles: ['student', 'parent', 'teacher', 'admin'] },
     { path: '/attendance', icon: FiCalendar, label: 'Attendance', roles: ['student', 'parent', 'teacher', 'admin'] },
     { path: '/messages', icon: FiMessageSquare, label: 'Messages', roles: ['student', 'parent', 'teacher', 'admin'] },
     { path: '/students', icon: FiUsers, label: 'Students', roles: ['teacher', 'admin'] },
-    { path: '/reports', icon: FiBarChart2, label: 'Reports', roles: ['teacher', 'admin'] },
+    { path: '/reports', icon: FiBarChart2, label: 'Reports', roles: ['student', 'parent', 'teacher', 'admin'] },
   ];
 
   const filteredNavItems = navItems.filter(item => item.roles.includes(role));

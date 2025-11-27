@@ -5,6 +5,8 @@ import Navigation from './components/Navigation';
 import Login from './components/Login';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
+import ParentsDashboard from './components/ParentsDashboard';
+import ReportsDashboard from './components/ReportsDashboard';
 import Courses from './components/Courses';
 import Assignments from './components/Assignments';
 import Grades from './components/Grades';
@@ -87,6 +89,8 @@ function App() {
                   <main className="flex-1 p-6 lg:p-8">
                     <Routes>
                       <Route path="/dashboard" element={<Dashboard />} />
+                      <Route path="/parents-dashboard" element={<ParentsDashboard />} />
+                      <Route path="/reports" element={<ReportsDashboard />} />
                       <Route path="/courses" element={<Courses />} />
                       <Route path="/assignments" element={<Assignments />} />
                       <Route path="/grades" element={<Grades />} />

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
-import { attendanceAPI } from '../services/api';
+import { attendanceAPI, coursesAPI } from '../services/api';
 import { FiCalendar, FiCheck, FiX, FiClock, FiPlus, FiEdit2 } from 'react-icons/fi';
 
 const Attendance = () => {
   const [attendance, setAttendance] = useState([]);
+  const [courses, setCourses] = useState([]);
+  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -19,7 +21,25 @@ const Attendance = () => {
 
   useEffect(() => {
     fetchAttendance();
+    if (user.role === 'teacher' || user.role === 'admin') {
+      fetchCourses();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    // Update students when course changes
+    if (formData.course) {
+      const selectedCourse = courses.find(c => c.id === parseInt(formData.course));
+      if (selectedCourse && selectedCourse.students) {
+        setStudents(selectedCourse.students);
+      } else {
+        setStudents([]);
+      }
+    } else {
+      setStudents([]);
+    }
+  }, [formData.course, courses]);
 
   const fetchAttendance = async () => {
     try {
@@ -33,13 +53,31 @@ const Attendance = () => {
     }
   };
 
+  const fetchCourses = async () => {
+    try {
+      const response = await coursesAPI.getAll();
+      setCourses(response.data.data || []);
+    } catch (err) {
+      console.error('Failed to load courses:', err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setError(null);
+      const attendanceData = {
+        student: parseInt(formData.student),
+        course: parseInt(formData.course),
+        date: formData.date,
+        status: formData.status,
+        notes: formData.notes || null
+      };
+
       if (selectedRecord) {
-        await attendanceAPI.update(selectedRecord.id, formData);
+        await attendanceAPI.update(selectedRecord.id, attendanceData);
       } else {
-        await attendanceAPI.create(formData);
+        await attendanceAPI.create(attendanceData);
       }
       setShowModal(false);
       setSelectedRecord(null);
@@ -50,9 +88,10 @@ const Attendance = () => {
         status: 'present',
         notes: ''
       });
+      setStudents([]);
       fetchAttendance();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save attendance');
+      setError(err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || 'Failed to save attendance');
     }
   };
 
@@ -176,12 +215,27 @@ const Attendance = () => {
 
               {(user.role === 'teacher' || user.role === 'admin') && (
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setSelectedRecord(record);
+                    const courseId = record.course_id || record.course?.id;
+                    const studentId = record.student_id || record.student?.id;
+                    
+                    // Fetch course details to get students list
+                    if (courseId) {
+                      try {
+                        const courseResponse = await coursesAPI.getById(courseId);
+                        const course = courseResponse.data.data;
+                        setCourses([course]);
+                        setStudents(course.students || []);
+                      } catch (err) {
+                        console.error('Failed to fetch course:', err);
+                      }
+                    }
+                    
                     setFormData({
-                      student: record.student_id,
-                      course: record.course_id,
-                      date: record.date,
+                      student: studentId?.toString() || '',
+                      course: courseId?.toString() || '',
+                      date: record.date ? record.date.split('T')[0] : new Date().toISOString().split('T')[0],
                       status: record.status,
                       notes: record.notes || ''
                     });
@@ -216,27 +270,46 @@ const Attendance = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Student ID
+                    Course
                   </label>
-                  <input
-                    type="number"
+                  <select
+                    value={formData.course}
+                    onChange={(e) => setFormData({ ...formData, course: e.target.value, student: '' })}
+                    className="input"
+                    required
+                  >
+                    <option value="">Select a course</option>
+                    {courses.map((course) => (
+                      <option key={course.id} value={course.id}>
+                        {course.name} ({course.code})
+                      </option>
+                    ))}
+                  </select>
+                  {courses.length === 0 && (
+                    <p className="text-sm text-gray-500 mt-1">No courses available. Please create a course first.</p>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Student
+                  </label>
+                  <select
                     value={formData.student}
                     onChange={(e) => setFormData({ ...formData, student: e.target.value })}
                     className="input"
                     required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Course ID
-                  </label>
-                  <input
-                    type="number"
-                    value={formData.course}
-                    onChange={(e) => setFormData({ ...formData, course: e.target.value })}
-                    className="input"
-                    required
-                  />
+                    disabled={!formData.course}
+                  >
+                    <option value="">Select a student</option>
+                    {students.map((student) => (
+                      <option key={student.id} value={student.id}>
+                        {student.name} {student.studentId ? `(${student.studentId})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                  {formData.course && students.length === 0 && (
+                    <p className="text-sm text-gray-500 mt-1">No students enrolled in this course.</p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>

@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { assignmentsAPI } from '../services/api';
+import { assignmentsAPI, coursesAPI } from '../services/api';
 import { FiFileText, FiCalendar, FiPlus, FiEdit2, FiUpload } from 'react-icons/fi';
 
 const Assignments = () => {
   const [assignments, setAssignments] = useState([]);
+  const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -14,13 +15,18 @@ const Assignments = () => {
     description: '',
     course: '',
     dueDate: '',
-    maxScore: 100
+    maxScore: 100,
+    isPublished: false
   });
   const [submitData, setSubmitData] = useState({ content: '' });
   const user = JSON.parse(localStorage.getItem('user') || '{}');
 
   useEffect(() => {
     fetchAssignments();
+    if (user.role === 'teacher' || user.role === 'admin') {
+      fetchCourses();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchAssignments = async () => {
@@ -35,20 +41,40 @@ const Assignments = () => {
     }
   };
 
+  const fetchCourses = async () => {
+    try {
+      const response = await coursesAPI.getAll();
+      setCourses(response.data.data || []);
+    } catch (err) {
+      console.error('Failed to load courses:', err);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      setError(null);
+      // Format the data for the API
+      const assignmentData = {
+        title: formData.title,
+        description: formData.description,
+        course: parseInt(formData.course),
+        dueDate: new Date(formData.dueDate).toISOString(),
+        maxScore: parseInt(formData.maxScore),
+        isPublished: formData.isPublished
+      };
+
       if (selectedAssignment) {
-        await assignmentsAPI.update(selectedAssignment.id, formData);
+        await assignmentsAPI.update(selectedAssignment.id, assignmentData);
       } else {
-        await assignmentsAPI.create(formData);
+        await assignmentsAPI.create(assignmentData);
       }
       setShowModal(false);
       setSelectedAssignment(null);
-      setFormData({ title: '', description: '', course: '', dueDate: '', maxScore: 100 });
+      setFormData({ title: '', description: '', course: '', dueDate: '', maxScore: 100, isPublished: false });
       fetchAssignments();
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to save assignment');
+      setError(err.response?.data?.message || err.response?.data?.errors?.[0]?.msg || 'Failed to save assignment');
     }
   };
 
@@ -87,7 +113,7 @@ const Assignments = () => {
           <button
             onClick={() => {
               setSelectedAssignment(null);
-              setFormData({ title: '', description: '', course: '', dueDate: '', maxScore: 100 });
+              setFormData({ title: '', description: '', course: '', dueDate: '', maxScore: 100, isPublished: false });
               setShowModal(true);
             }}
             className="btn btn-primary flex items-center"
@@ -164,12 +190,15 @@ const Assignments = () => {
                   <button
                     onClick={() => {
                       setSelectedAssignment(assignment);
+                      // Format dueDate for datetime-local input (YYYY-MM-DDTHH:mm)
+                      const dueDate = assignment.dueDate ? new Date(assignment.dueDate).toISOString().slice(0, 16) : '';
                       setFormData({
                         title: assignment.title,
                         description: assignment.description || '',
-                        course: assignment.course_id,
-                        dueDate: assignment.dueDate ? assignment.dueDate.split('T')[0] : '',
-                        maxScore: assignment.maxScore
+                        course: assignment.course_id || assignment.course?.id || '',
+                        dueDate: dueDate,
+                        maxScore: assignment.maxScore,
+                        isPublished: assignment.isPublished === 1 || assignment.isPublished === true
                       });
                       setShowModal(true);
                     }}
@@ -226,16 +255,24 @@ const Assignments = () => {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Course ID
+                    Course
                   </label>
-                  <input
-                    type="number"
+                  <select
                     value={formData.course}
                     onChange={(e) => setFormData({ ...formData, course: e.target.value })}
                     className="input"
                     required
-                    placeholder="Enter course ID"
-                  />
+                  >
+                    <option value="">Select a course</option>
+                    {courses.map((course) => (
+                      <option key={course.id} value={course.id}>
+                        {course.name} ({course.code})
+                      </option>
+                    ))}
+                  </select>
+                  {courses.length === 0 && (
+                    <p className="text-sm text-gray-500 mt-1">No courses available. Please create a course first.</p>
+                  )}
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -260,8 +297,21 @@ const Assignments = () => {
                       onChange={(e) => setFormData({ ...formData, maxScore: e.target.value })}
                       className="input"
                       required
+                      min="1"
                     />
                   </div>
+                </div>
+                <div>
+                  <label className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      checked={formData.isPublished}
+                      onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
+                      className="rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">Publish immediately</span>
+                  </label>
+                  <p className="text-xs text-gray-500 mt-1">Published assignments are visible to students</p>
                 </div>
               </div>
               <div className="flex space-x-3 mt-6">
