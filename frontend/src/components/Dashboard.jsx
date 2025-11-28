@@ -19,6 +19,12 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Redirect parents to their dedicated dashboard
+    if (user.role === 'parent') {
+      navigate('/parents-dashboard', { replace: true });
+      return;
+    }
+
     const fetchDashboard = async () => {
       try {
         const response = await dashboardAPI.getData();
@@ -31,7 +37,7 @@ const Dashboard = () => {
     };
 
     fetchDashboard();
-  }, []);
+  }, [user.role, navigate]);
 
   if (loading) {
     return (

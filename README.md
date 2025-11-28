@@ -188,13 +188,44 @@ This creates the following test accounts:
   - Email: `teacher@edubridge.africa`
   - Password: `teacher123`
 
+### Test Parents
+- **Bruno Parent**
+  - Email: `bruno.parent@edubridge.africa`
+  - Password: `parent123`
+  - Linked to: Ishimwe Bruno
+
+- **Emmy Parent**
+  - Email: `emmy.parent@edubridge.africa`
+  - Password: `parent123`
+  - Linked to: Gasasira Emmy
+
+- **Arnold Parent**
+  - Email: `arnold.parent@edubridge.africa`
+  - Password: `parent123`
+  - Linked to: Uwishema Arnold
+
 ### Test Courses
 - **Introduction to Software** (ITS101)
 - **Frontend Web Development** (FWD201)
 
-All students are automatically enrolled in both courses.
+All students are automatically enrolled in both courses, and parents are linked to their respective children.
 
 > **Note**: The script is idempotent - it's safe to run multiple times. It will skip creating users/courses that already exist.
+
+### Creating Parent Accounts
+
+To create parent accounts for existing students, you can use the dedicated script:
+
+```bash
+cd backend
+npm run add-parents
+```
+
+This script will:
+- Find all students in the database
+- Create a parent account for each student (if it doesn't exist)
+- Link the parent to their child automatically
+- Generate parent emails based on student emails (e.g., `student@student.edubridge.africa` → `student@parent.edubridge.africa`)
 
 ## Accessing the Dashboard
 
@@ -226,7 +257,7 @@ This will create a default admin user with:
 - **Email**: `admin@edubridge.africa`
 - **Password**: `bruno123`
 
-⚠️ **Important**: Change this password after your first login!
+
 
 3. Start both servers (backend and frontend)
 4. Navigate to `http://localhost:3000/login`
@@ -257,6 +288,12 @@ This will create a default admin user with:
 
 Once logged in, you can access:
 - **Dashboard**: Overview of your data (grades, attendance, courses, etc.)
+  - **Students**: View courses, assignments, grades, and attendance
+  - **Parents**: Access the Parent Dashboard to monitor children's performance
+  - **Teachers**: Manage courses, assignments, grades, and attendance
+  - **Admins**: Full system access and management
+- **Parent Dashboard**: (Parents only) Comprehensive view of children's academic performance
+- **Reports**: Analytics and performance reports
 - **Courses**: View and manage courses
 - **Assignments**: View and submit assignments
 - **Grades**: View grades and performance
@@ -350,7 +387,8 @@ Configure email settings in the backend `.env` file to enable this feature.
 - `npm run dev` - Start the development server with nodemon
 - `npm run create-admin` - Create a default admin user
 - `npm run update-admin-password` - Update the admin user's password
-- `npm run add-test-data` - Add sample students, courses, and teacher for testing
+- `npm run add-test-data` - Add sample students, courses, teacher, and parents for testing
+- `npm run add-parents` - Create parent accounts for all existing students
 
 ### Frontend Scripts
 

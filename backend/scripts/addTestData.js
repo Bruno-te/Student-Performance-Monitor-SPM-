@@ -123,11 +123,58 @@ const addTestData = async () => {
       }
     }
 
+    // Add parents and link them to students
+    console.log('\n👨‍👩‍👧‍👦 Adding parents...');
+    const parents = [
+      { name: 'Bruno Parent', email: 'bruno.parent@edubridge.africa', phone: '+250788111111', studentIndex: 0 },
+      { name: 'Emmy Parent', email: 'emmy.parent@edubridge.africa', phone: '+250788222222', studentIndex: 1 },
+      { name: 'Arnold Parent', email: 'arnold.parent@edubridge.africa', phone: '+250788333333', studentIndex: 2 }
+    ];
+
+    const createdParents = [];
+    for (const parentData of parents) {
+      // Check if parent already exists
+      const existing = await User.findOne({ email: parentData.email });
+      let parent;
+      
+      if (existing) {
+        console.log(`  ⚠️  Parent ${parentData.name} already exists`);
+        parent = existing;
+      } else {
+        parent = await User.create({
+          name: parentData.name,
+          email: parentData.email,
+          password: 'parent123',
+          role: 'parent',
+          phone: parentData.phone
+        });
+        console.log(`  ✅ Created parent: ${parent.name} (ID: ${parent.id})`);
+      }
+      createdParents.push(parent);
+
+      // Link parent to student
+      const student = createdStudents[parentData.studentIndex];
+      if (student) {
+        // Check if relationship already exists
+        const existingRelation = db.prepare(`
+          SELECT * FROM user_relationships WHERE parent_id = ? AND child_id = ?
+        `).get(parent.id, student.id);
+
+        if (!existingRelation) {
+          await User.linkParent(student.id, parent.id);
+          console.log(`  ✅ Linked ${parent.name} to ${student.name}`);
+        } else {
+          console.log(`  ⚠️  ${parent.name} already linked to ${student.name}`);
+        }
+      }
+    }
+
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('✅ Test data added successfully!');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('\n📋 Summary:');
     console.log(`   Students: ${createdStudents.length}`);
+    console.log(`   Parents: ${createdParents.length}`);
     console.log(`   Courses: ${createdCourses.length}`);
     console.log(`   Teacher: ${teacher.name}`);
     console.log('\n🔑 Login Credentials:');
@@ -139,6 +186,15 @@ const addTestData = async () => {
       console.log(`     ${s.name}:`);
       console.log(`       Email: ${s.email}`);
       console.log(`       Password: student123`);
+    });
+    console.log('\n   Parents:');
+    parents.forEach((p, idx) => {
+      console.log(`     ${p.name}:`);
+      console.log(`       Email: ${p.email}`);
+      console.log(`       Password: parent123`);
+      if (createdStudents[p.studentIndex]) {
+        console.log(`       Linked to: ${createdStudents[p.studentIndex].name}`);
+      }
     });
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
     

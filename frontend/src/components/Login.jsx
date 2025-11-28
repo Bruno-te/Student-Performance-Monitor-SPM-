@@ -33,8 +33,12 @@ const Login = () => {
       // Dispatch custom event to notify App component
       window.dispatchEvent(new Event('authChange'));
       
-      // Navigate to dashboard
-      navigate('/dashboard', { replace: true });
+      // Navigate to appropriate dashboard based on role
+      if (user.role === 'parent') {
+        navigate('/parents-dashboard', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed. Please try again.');
     } finally {

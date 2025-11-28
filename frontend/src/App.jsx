@@ -98,7 +98,7 @@ function App() {
                       <Route path="/attendance" element={<Attendance />} />
                       <Route path="/resources" element={<Resources />} />
                       <Route path="/features" element={<Features />} />
-                      <Route path="/" element={<Navigate to="/dashboard" />} />
+                      <Route path="/" element={<Navigate to="/dashboard" replace />} />
                     </Routes>
                   </main>
                 </div>

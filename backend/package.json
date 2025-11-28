@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "create-admin": "node scripts/createAdmin.js",
     "update-admin-password": "node scripts/updateAdminPassword.js",
-    "add-test-data": "node scripts/addTestData.js"
+    "add-test-data": "node scripts/addTestData.js",
+    "add-parents": "node scripts/addParents.js"
   },
   "keywords": [
     "education",
