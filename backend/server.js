@@ -12,27 +12,34 @@ initDB();
 const app = express();
 
 // Middleware
-// CORS configuration - allow localhost for development and Render URLs for production
+// CORS configuration - allow localhost for development and deployed frontend URLs in production
 const allowedOrigins = [
   'http://localhost:3000',
   'http://127.0.0.1:3000',
-  process.env.FRONTEND_URL, // Set this in production
-  'https://edubridge-frontend.onrender.com', // Default Render frontend URL
-  // Add your custom domain here if you have one
-];
+  'https://student-performance-monitor-spm-1.onrender.com', // your Render frontend
+  process.env.FRONTEND_URL // optional override for custom domain
+].filter(Boolean);
 
-app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like curl, mobile apps)
+      if (!origin) return callback(null, true);
+
+      // In development, allow everything from localhost
+      if (process.env.NODE_ENV !== 'production') {
+        return callback(null, true);
+      }
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
