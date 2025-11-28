@@ -41,6 +41,8 @@ const Register = () => {
 
     try {
       const { confirmPassword, ...userData } = formData;
+      // Normalize email to lowercase for consistent authentication
+      userData.email = userData.email.toLowerCase().trim();
       const response = await authAPI.register(userData);
       const { token, user } = response.data;
 

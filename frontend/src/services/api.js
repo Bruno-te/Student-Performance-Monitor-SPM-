@@ -1,5 +1,6 @@
 import axios from 'axios';
 
+// Use direct backend URL - CORS is now properly configured
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const api = axios.create({

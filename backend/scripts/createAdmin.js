@@ -24,7 +24,7 @@ const createAdmin = async () => {
     const admin = await User.create({
       name: 'System Administrator',
       email: 'admin@edubridge.africa',
-      password: 'admin123', // Change this password after first login!
+      password: 'bruno123', // Change this password after first login!
       role: 'admin',
       phone: '+1234567890',
     });
@@ -32,7 +32,7 @@ const createAdmin = async () => {
     console.log('✅ Admin user created successfully!');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('Email: admin@edubridge.africa');
-    console.log('Password: admin123');
+    console.log('Password: bruno123');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('⚠️  IMPORTANT: Change this password after first login!');
     

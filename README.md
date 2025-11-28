@@ -396,6 +396,31 @@ Configure email settings in the backend `.env` file to enable this feature.
 - `npm run build` - Build for production
 - `npm run preview` - Preview the production build
 
+## Deployment Checklist
+
+### 1. Configure Environment Variables
+- Copy `backend/.env.example` to `backend/.env` and fill in your production secrets (JWT, SMTP, etc.).
+- Copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_URL` to the deployed backend URL (e.g., `https://api.yourdomain.com/api`).
+
+### 2. Backend (Node/Express + SQLite)
+1. `cd backend`
+2. `npm install` (or `npm ci` on CI)
+3. `npm prune --production` (optional) to keep only runtime dependencies.
+4. Start the server with `npm start` (makes sure `NODE_ENV=production`).
+5. Ensure `backend/data/edubridge.db` lives on persistent storage if your host wipes the filesystem on redeploy.
+6. Verify the health endpoint: `curl https://your-backend-domain.com/api/health`.
+
+### 3. Frontend (Vite/React)
+1. `cd frontend`
+2. `npm install`
+3. `npm run build`
+4. Deploy the generated `frontend/dist` directory to any static host (Netlify, Vercel, Cloudflare Pages, etc.).
+
+### 4. Smoke Tests
+- Hit `POST /api/auth/login` with admin credentials to confirm JWT + DB.
+- Run `npm run preview` inside `frontend` to ensure the compiled site talks to the production API (via `VITE_API_URL`).
+- Trigger an action that sends email (attendance/grade alert) to confirm your SMTP credentials are correct. Gmail users must create an App Password or use another provider to avoid `535 5.7.8` errors.
+
 ## Contributing
 
 This project is designed to improve education in Africa. Contributions are welcome!

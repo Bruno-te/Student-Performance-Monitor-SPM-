@@ -24,7 +24,9 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const response = await authAPI.login(formData.email, formData.password);
+      // Normalize email to lowercase to match backend expectations
+      const normalizedEmail = formData.email.toLowerCase().trim();
+      const response = await authAPI.login(normalizedEmail, formData.password);
       const { token, user } = response.data;
 
       localStorage.setItem('token', token);
@@ -40,7 +42,20 @@ const Login = () => {
         navigate('/dashboard', { replace: true });
       }
     } catch (err) {
-      setError(err.response?.data?.message || 'Login failed. Please try again.');
+      console.error('Login error details:', err);
+      
+      // Handle network/connection errors
+      if (!err.response) {
+        if (err.message?.includes('Network Error') || err.code === 'ERR_NETWORK') {
+          setError('Cannot connect to server. Please make sure the backend server is running on port 5000.');
+        } else {
+          setError('Network error. Please check your connection and try again.');
+        }
+      } else {
+        // Handle API errors
+        const errorMessage = err.response?.data?.message || 'Login failed. Please try again.';
+        setError(errorMessage);
+      }
     } finally {
       setLoading(false);
     }

@@ -21,8 +21,11 @@ router.post('/register', [
   try {
     const { name, email, password, role, phone, studentId, parentId } = req.body;
 
+    // Normalize email to lowercase for consistent storage and lookup
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Check if user exists
-    const userExists = await User.findOne({ email });
+    const userExists = await User.findOne({ email: normalizedEmail });
     if (userExists) {
       return res.status(400).json({ message: 'User already exists' });
     }
@@ -30,7 +33,7 @@ router.post('/register', [
     // Create user
     const user = await User.create({
       name,
-      email,
+      email: normalizedEmail,
       password,
       role,
       phone,
@@ -74,8 +77,11 @@ router.post('/login', [
   try {
     const { email, password } = req.body;
 
+    // Normalize email to lowercase and trim whitespace
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Check for user
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ email: normalizedEmail });
     if (!user) {
       return res.status(401).json({ message: 'Invalid credentials' });
     }
