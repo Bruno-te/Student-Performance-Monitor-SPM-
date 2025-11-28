@@ -1,0 +1,45 @@
+# Render Blueprint Configuration
+# This file allows you to deploy both services with one click
+# Go to: https://dashboard.render.com/blueprints
+
+services:
+  # Backend API Service
+  - type: web
+    name: edubridge-backend
+    env: node
+    plan: free  # Change to 'starter' ($7/month) for always-on
+    buildCommand: cd backend && npm install
+    startCommand: cd backend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true  # Render will generate a secure secret
+      - key: JWT_EXPIRE
+        value: 7d
+      - key: EMAIL_HOST
+        value: smtp.gmail.com
+      - key: EMAIL_PORT
+        value: 587
+      # Add these manually in Render dashboard:
+      # EMAIL_USER=your-email@gmail.com
+      # EMAIL_PASS=your-app-password
+      # EMAIL_FROM=noreply@edubridge-africa.com
+    disk:
+      name: database-storage
+      mountPath: /opt/render/project/src/backend/data
+      sizeGB: 1
+
+  # Frontend Static Site
+  - type: web
+    name: edubridge-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        value: https://edubridge-backend.onrender.com/api
+        # Update this after backend is deployed with actual URL
+
