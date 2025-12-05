@@ -1,435 +1,265 @@
-# EduBridge Africa - Student Performance Monitor
+🚀 EduBridge Africa — Student Performance Monitor
 
-A comprehensive web application designed to improve student performance and access to quality education in Africa. This platform bridges gaps in education by providing effective systems to track progress, enhance stakeholder engagement, and deliver automatic parent alerts.
+A modern web platform designed to improve student performance and expand access to quality education across Africa. EduBridge Africa bridges gaps between students, parents, teachers, and administrators through real-time tracking, analytics, and communication.
 
-## Mission
+📘 Mission
 
-Our mission is to improve student performance and access to quality education in Africa. We believe that education is a powerful driver of change, but many students face challenges such as:
-- Limited access to resources
-- Poor engagement between stakeholders
-- Lack of effective systems to track progress
+Our mission is to empower students and educators by leveraging technology to solve challenges such as:
 
-By using technology, we bridge these gaps and empower both students and educators to succeed.
+Limited access to academic resources
 
-## Features
+Weak engagement between parents, teachers, and students
 
-- **Performance Tracking**: Real-time grade tracking and performance analytics
-- **Parent Alerts**: Automatic email notifications for low grades and attendance issues
-- **Stakeholder Engagement**: Connect students, parents, teachers, and administrators
-- **Analytics & Reports**: Comprehensive reports and insights
-- **Communication Hub**: Direct messaging between all stakeholders
-- **Resource Access**: Educational materials and resources
+Lack of effective systems to track performance and attendance
 
-## Project Structure
+EduBridge Africa provides an end-to-end platform that strengthens communication, enhances visibility, and improves learning outcomes.
 
-```
+🔑 Key Features
+
+Real-Time Performance Tracking – View grades, assignments, and progress instantly
+
+Automatic Parent Alerts – Email notifications for low grades or attendance issues
+
+Stakeholder Engagement – Connect parents, teachers, students, and admins
+
+Analytics & Reports – Clear insights into performance trends
+
+Messaging Hub – Direct communication between all user roles
+
+Resource Center – Access learning materials and documents
+
+📂 Project Structure
 edubridge-africa/
-├── backend/                    # Backend API
-│   ├── config/
-│   │   └── database.js
-│   ├── models/
-│   │   ├── User.js
-│   │   ├── Course.js
-│   │   ├── Assignment.js
-│   │   ├── Submission.js
-│   │   ├── Grade.js
-│   │   ├── Message.js
-│   │   └── Attendance.js
-│   ├── routes/
-│   │   ├── auth.js
-│   │   ├── users.js
-│   │   ├── courses.js
-│   │   ├── assignments.js
-│   │   ├── grades.js
-│   │   ├── messages.js
-│   │   ├── attendance.js
-│   │   └── dashboard.js
-│   ├── middleware/
-│   │   └── auth.js
-│   ├── scripts/
-│   │   ├── createAdmin.js
-│   │   ├── updateAdminPassword.js
-│   │   └── addTestData.js
-│   ├── server.js
-│   ├── package.json
-│   └── .env
-│
-├── frontend/                   # React Frontend
-│   ├── public/
-│   │   ├── index.html
-│   │   └── manifest.json
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Login.js
-│   │   │   ├── Dashboard.js
-│   │   │   ├── Header.js
-│   │   │   ├── Navigation.js
-│   │   │   ├── Resources.js
-│   │   │   └── Features.js
-│   │   ├── services/
-│   │   │   └── api.js
-│   │   ├── hooks/
-│   │   │   └── useAPI.js
-│   │   ├── App.js
-│   │   ├── index.js
-│   │   └── index.css
-│   ├── package.json
-│   └── .env
-```
+├── backend/      # Express API + SQLite database
+└── frontend/     # React (Vite) web app
 
-## Getting Started
 
-### Prerequisites
+A full detailed tree is included in the original project structure above.
 
-- Node.js (v14 or higher)
-- npm or yarn
-- **No database server needed!** (Uses SQLite - file-based database)
+🛠️ Getting Started
+Prerequisites
 
-### Backend Setup
+Node.js v14+
 
-1. Navigate to the backend directory:
-```bash
+npm or yarn
+
+No external DB needed (uses SQLite file database)
+
+🔧 Backend Setup
+1️⃣ Navigate to backend
 cd backend
-```
 
-2. Install dependencies:
-```bash
+2️⃣ Install dependencies
 npm install
-```
 
-3. Create a `.env` file in the backend directory with the following variables:
-```
+3️⃣ Create .env
 PORT=5000
-JWT_SECRET=your-super-secret-jwt-key-change-in-production
+JWT_SECRET=your-secret-key
 JWT_EXPIRE=7d
 NODE_ENV=development
 
-# Email Configuration (for parent alerts)
+# Email (Parent Alerts)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_USER=your-email@gmail.com
 EMAIL_PASS=your-email-password
 EMAIL_FROM=noreply@edubridge-africa.com
-```
 
-4. Start the backend server:
-```bash
+4️⃣ Start server
 npm run dev
-```
 
-The backend API will be running on `http://localhost:5000`
-
-5. (Optional) Create test data with sample students, courses, and a teacher:
-```bash
+5️⃣ (Optional) Add sample test data
 npm run add-test-data
-```
 
-This will create:
-- 3 sample students (Ishimwe Bruno, Gasasira Emmy, Uwishema Arnold)
-- 1 teacher (Dr. John Teacher)
-- 2 courses (Introduction to Software, Frontend Web Development)
-- Enrolls all students in both courses
 
-See the [Test Data](#test-data) section below for login credentials.
+Backend runs at: http://localhost:5000
 
-### Frontend Setup
-
-1. Navigate to the frontend directory:
-```bash
+🎨 Frontend Setup
+1️⃣ Navigate to frontend
 cd frontend
-```
 
-2. Install dependencies:
-```bash
+2️⃣ Install dependencies
 npm install
-```
 
-3. Create a `.env` file in the frontend directory:
-```
+3️⃣ Create .env
 VITE_API_URL=http://localhost:5000/api
-```
 
-4. Start the development server:
-```bash
+4️⃣ Start React app
 npm run dev
-```
 
-The frontend will be running on `http://localhost:3000`
 
-## Test Data
+Frontend runs at: http://localhost:3000
 
-For quick testing, you can populate the database with sample data:
+🧪 Test Data (Optional)
 
-```bash
-cd backend
+Running:
+
 npm run add-test-data
-```
 
-This creates the following test accounts:
 
-### Test Students
-- **Ishimwe Bruno**
-  - Email: `ishimwe.bruno@student.edubridge.africa`
-  - Password: `student123`
-  - Student ID: `STU001`
+Creates sample:
 
-- **Gasasira Emmy**
-  - Email: `gasasira.emmy@student.edubridge.africa`
-  - Password: `student123`
-  - Student ID: `STU002`
+👨‍🎓 Students
+Name	Email	Password
+Ishimwe Bruno	ishimwe.bruno@student.edubridge.africa
+	student123
+Gasasira Emmy	gasasira.emmy@student.edubridge.africa
+	student123
+Uwishema Arnold	uwishema.arnold@student.edubridge.africa
+	student123
+👨‍🏫 Teacher
 
-- **Uwishema Arnold**
-  - Email: `uwishema.arnold@student.edubridge.africa`
-  - Password: `student123`
-  - Student ID: `STU003`
+Email: teacher@edubridge.africa
+Password: teacher123
 
-### Test Teacher
-- **Dr. John Teacher**
-  - Email: `teacher@edubridge.africa`
-  - Password: `teacher123`
+👪 Parents
 
-### Test Parents
-- **Bruno Parent**
-  - Email: `bruno.parent@edubridge.africa`
-  - Password: `parent123`
-  - Linked to: Ishimwe Bruno
+Linked automatically to students
+Password for all: parent123
 
-- **Emmy Parent**
-  - Email: `emmy.parent@edubridge.africa`
-  - Password: `parent123`
-  - Linked to: Gasasira Emmy
+📚 Courses
 
-- **Arnold Parent**
-  - Email: `arnold.parent@edubridge.africa`
-  - Password: `parent123`
-  - Linked to: Uwishema Arnold
+Introduction to Software (ITS101)
 
-### Test Courses
-- **Introduction to Software** (ITS101)
-- **Frontend Web Development** (FWD201)
+Frontend Web Development (FWD201)
 
-All students are automatically enrolled in both courses, and parents are linked to their respective children.
+🔑 Accessing the Dashboard
+✅ Option 1: Use Test Accounts
 
-> **Note**: The script is idempotent - it's safe to run multiple times. It will skip creating users/courses that already exist.
+Go to: http://localhost:3000/login
+Use any test email/password.
 
-### Creating Parent Accounts
-
-To create parent accounts for existing students, you can use the dedicated script:
-
-```bash
-cd backend
-npm run add-parents
-```
-
-This script will:
-- Find all students in the database
-- Create a parent account for each student (if it doesn't exist)
-- Link the parent to their child automatically
-- Generate parent emails based on student emails (e.g., `student@student.edubridge.africa` → `student@parent.edubridge.africa`)
-
-## Accessing the Dashboard
-
-To access the dashboard, you need to authenticate first. You have several options:
-
-### Option 1: Use Test Data (Quick Start)
-
-1. Run the test data script (if you haven't already):
-```bash
-cd backend
-npm run add-test-data
-```
-
-2. Start both servers (backend and frontend)
-3. Navigate to `http://localhost:3000/login`
-4. Login with any of the test accounts above
-5. You'll be automatically redirected to the dashboard
-
-### Option 2: Create an Admin User (Recommended for First Time)
-
-1. Make sure your backend `.env` file is configured
-2. Run the admin creation script:
-```bash
-cd backend
+✅ Option 2: Create Admin
 npm run create-admin
-```
-
-This will create a default admin user with:
-- **Email**: `admin@edubridge.africa`
-- **Password**: `bruno123`
 
 
+Creates:
+Email: admin@edubridge.africa
 
-3. Start both servers (backend and frontend)
-4. Navigate to `http://localhost:3000/login`
-5. Login with the admin credentials
-6. You'll be automatically redirected to the dashboard
+Password: bruno123
 
-### Option 3: Register a New User
+✅ Option 3: Register New User
 
-1. Make sure both backend and frontend servers are running
-2. Navigate to `http://localhost:3000/register`
-3. Fill in the registration form:
-   - Name
-   - Email
-   - Password (minimum 6 characters)
-   - Role (Student, Parent, Teacher, or Admin)
-   - Optional: Phone, Student ID (for students)
-4. Click "Register"
-5. You'll be automatically logged in and redirected to the dashboard
+Visit: http://localhost:3000/register
 
-### Option 4: Login with Existing Account
+👥 User Roles
+Role	Capabilities
+Student	View grades, assignments, attendance
+Parent	Monitor student performance + alerts
+Teacher	Manage courses, assignments, grades, attendance
+Admin	Full system control
+🔌 API Overview (Short Version)
+Auth
 
-1. Navigate to `http://localhost:3000/login`
-2. Enter your email and password
-3. Click "Login"
-4. You'll be redirected to the dashboard based on your role
+POST /api/auth/register
 
-### Dashboard Access
+POST /api/auth/login
 
-Once logged in, you can access:
-- **Dashboard**: Overview of your data (grades, attendance, courses, etc.)
-  - **Students**: View courses, assignments, grades, and attendance
-  - **Parents**: Access the Parent Dashboard to monitor children's performance
-  - **Teachers**: Manage courses, assignments, grades, and attendance
-  - **Admins**: Full system access and management
-- **Parent Dashboard**: (Parents only) Comprehensive view of children's academic performance
-- **Reports**: Analytics and performance reports
-- **Courses**: View and manage courses
-- **Assignments**: View and submit assignments
-- **Grades**: View grades and performance
-- **Attendance**: View attendance records
-- **Messages**: Communicate with other users
-- **Resources**: Access educational materials
+GET /api/auth/me
 
-The dashboard content varies based on your role (Student, Parent, Teacher, or Admin).
+Courses
 
-## User Roles
+GET /api/courses
 
-The platform supports four user roles:
+POST /api/courses (Teacher/Admin)
 
-1. **Student**: View courses, assignments, grades, and attendance
-2. **Parent**: Monitor children's performance and receive alerts
-3. **Teacher**: Manage courses, assignments, grades, and attendance
-4. **Admin**: Full system access and management
+Assignments
 
-## API Endpoints
+GET /api/assignments
 
-### Authentication
-- `POST /api/auth/register` - Register a new user
-- `POST /api/auth/login` - Login user
-- `GET /api/auth/me` - Get current user
+POST /api/assignments (Teacher/Admin)
 
-### Users
-- `GET /api/users` - Get all users (Admin/Teacher)
-- `GET /api/users/:id` - Get user by ID
-- `PUT /api/users/:id` - Update user
+Grades
 
-### Courses
-- `GET /api/courses` - Get all courses
-- `GET /api/courses/:id` - Get course by ID
-- `POST /api/courses` - Create course (Teacher/Admin)
-- `PUT /api/courses/:id` - Update course (Teacher/Admin)
+GET /api/grades/student/:id
 
-### Assignments
-- `GET /api/assignments` - Get all assignments
-- `GET /api/assignments/:id` - Get assignment by ID
-- `POST /api/assignments` - Create assignment (Teacher/Admin)
-- `POST /api/assignments/:id/submit` - Submit assignment (Student)
+POST /api/grades
 
-### Grades
-- `GET /api/grades` - Get all grades
-- `GET /api/grades/:id` - Get grade by ID
-- `POST /api/grades` - Create grade (Teacher/Admin)
-- `GET /api/grades/student/:studentId` - Get student grades
+Attendance
 
-### Attendance
-- `GET /api/attendance` - Get all attendance records
-- `POST /api/attendance` - Create attendance record (Teacher/Admin)
-- `GET /api/attendance/student/:studentId` - Get student attendance
+GET /api/attendance/student/:id
 
-### Messages
-- `GET /api/messages` - Get all messages
-- `GET /api/messages/inbox` - Get inbox messages
-- `POST /api/messages` - Send message
+POST /api/attendance
 
-### Dashboard
-- `GET /api/dashboard` - Get dashboard data
+Messaging
 
-## Parent Alerts
+POST /api/messages
 
-The system automatically sends email alerts to parents when:
-- A student receives a grade below 60%
-- A student is marked as absent or late
+📡 Parent Alerts
 
-Configure email settings in the backend `.env` file to enable this feature.
+Emails are automatically sent when:
 
-## Technology Stack
+Grade < 60%
 
-### Backend
-- Node.js
-- Express.js
-- SQLite (file-based database - no server needed!)
-- JWT for authentication
-- Nodemailer for email alerts
+Student is absent or late
 
-### Frontend
-- React
-- React Router
-- Axios for API calls
-- Tailwind CSS for styling
-- Vite for build tooling
+Ensure SMTP settings in .env are correct.
 
-## Available Scripts
+🧱 Tech Stack
+Backend
 
-### Backend Scripts
+Node.js
 
-- `npm start` - Start the production server
-- `npm run dev` - Start the development server with nodemon
-- `npm run create-admin` - Create a default admin user
-- `npm run update-admin-password` - Update the admin user's password
-- `npm run add-test-data` - Add sample students, courses, teacher, and parents for testing
-- `npm run add-parents` - Create parent accounts for all existing students
+Express.js
 
-### Frontend Scripts
+SQLite
 
-- `npm run dev` - Start the development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview the production build
+JWT Authentication
 
-## Deployment Checklist
+Nodemailer
 
-### 1. Configure Environment Variables
-- Copy `backend/.env.example` to `backend/.env` and fill in your production secrets (JWT, SMTP, etc.).
-- Copy `frontend/.env.example` to `frontend/.env` and set `VITE_API_URL` to the deployed backend URL (e.g., `https://api.yourdomain.com/api`).
+Frontend
 
-### 2. Backend (Node/Express + SQLite)
-1. `cd backend`
-2. `npm install` (or `npm ci` on CI)
-3. `npm prune --production` (optional) to keep only runtime dependencies.
-4. Start the server with `npm start` (makes sure `NODE_ENV=production`).
-5. Ensure `backend/data/edubridge.db` lives on persistent storage if your host wipes the filesystem on redeploy.
-6. Verify the health endpoint: `curl https://your-backend-domain.com/api/health`.
+React
 
-### 3. Frontend (Vite/React)
-1. `cd frontend`
-2. `npm install`
-3. `npm run build`
-4. Deploy the generated `frontend/dist` directory to any static host (Netlify, Vercel, Cloudflare Pages, etc.).
+Vite
 
-### 4. Smoke Tests
-- Hit `POST /api/auth/login` with admin credentials to confirm JWT + DB.
-- Run `npm run preview` inside `frontend` to ensure the compiled site talks to the production API (via `VITE_API_URL`).
-- Trigger an action that sends email (attendance/grade alert) to confirm your SMTP credentials are correct. Gmail users must create an App Password or use another provider to avoid `535 5.7.8` errors.
+Axios
 
-## Contributing
+Tailwind CSS
 
-This project is designed to improve education in Africa. Contributions are welcome!
+📦 Useful Scripts
+Backend
 
-## License
+npm run dev — Dev server
 
-ISC
+npm start — Production
 
-## Contact
+npm run create-admin
 
-For questions or support, please contact the development team.
+npm run add-test-data
 
+npm run add-parents
+
+Frontend
+
+npm run dev
+
+npm run build
+
+npm run preview
+
+🚀 Deployment Checklist
+✔ Backend
+
+Install deps
+
+Set environment variables
+
+Ensure SQLite file persists
+
+Start with: npm start
+
+✔ Frontend
+
+Run npm run build
+
+Deploy dist/ to hosting provider
+
+✔ Verify
+
+Admin login works
+
+Email alerts work
+
+Dashboard loads from deployed API
