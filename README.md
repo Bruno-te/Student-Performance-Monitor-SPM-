@@ -112,7 +112,19 @@ Uwishema Arnold	uwishema.arnold@student.edubridge.africa
 Email: teacher@edubridge.africa
 Password: teacher123
 
-👪 Parents
+👪 ### Test Parents -
+**Bruno Parent**
+- Email: bruno.parent@edubridge.africa
+- - Password: parent123
+  - Linked to: Ishimwe Bruno -
+**Emmy Parent**
+- Email: emmy.parent@edubridge.africa
+- Password: parent123
+- Linked to: Gasasira Emmy
+**Arnold Parent**
+- Email: arnold.parent@edubridge.africa
+ Password: parent123
+- Linked to: Uwishema Arnold
 
 Linked automatically to students
 Password for all: parent123
